@@ -1,0 +1,3 @@
+@echo off
+echo FREEMAN WAS HERE! Cleaning Cache...
+flutter doctor
