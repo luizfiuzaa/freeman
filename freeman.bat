@@ -39,4 +39,6 @@ echo.
 
 echo y | flutter pub get
 
+echo.
+echo.
 echo $ ~ FREEMAN WAS HERE! HAVE A GREAT DAY!
