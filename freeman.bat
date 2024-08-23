@@ -1,33 +1,42 @@
 @echo off
-echo λ ~ FREEMAN WAS HERE! LET'S GO...
 
-echo λ ~ FREEMAN DOING WHAT NEEDS TO BE DONE 
+echo $ ~ FREEMAN WAS HERE! LET'S GO...
+echo.
+echo $ ~ FREEMAN DOING WHAT NEEDS TO BE DONE 
+echo.
+echo y | flutter clean
+echo $ ~ 1/3
+echo.
+echo y | flutter pub cache repair
+echo.
+echo $ ~ 2/3
+echo.
+echo y | flutter pub cache clean
+echo $ ~ 3/3
+echo.
+echo $ ~ FREEMAN DOING THE SPECIFIC CLEANUP!
+rmdir /S /Q build/ 2>nul
+rmdir /S /Q .dart_tool/ 2>nul
+rmdir /S /Q .gradle/ 2>nul
+rmdir /S /Q .idea/ 2>nul
+rmdir /S /Q .packages 2>nul
+rmdir /S /Q ios/Pods 2>nul
+rmdir /S /Q ios/.symlinks 2>nul
+rmdir /S /Q ios/Flutter/Flutter.framework 2>nul
+rmdir /S /Q ios/Flutter/Flutter.podspec 2>nul
+rmdir /S /Q ios/Flutter/App.framework 2>nul
+rmdir /S /Q android/.gradle 2>nul
+rmdir /S /Q android/.idea 2>nul 
+rmdir /S /Q android/.gradle/caches/ 2>nul
+rmdir /S /Q android/.gradle/daemon/ 2>nul
+rmdir /S /Q android/.gradle/native/ 2>nul
+rmdir /S /Q android/.gradle/7.0/ 2>nul
+rmdir /S /Q android/build/ 2>nul
+del /F /Q pubspec.lock 2>nul
 
-flutter clean
-flutter pub cache clean
-flutter pub cache repair
+echo $ ~ FREEMAN RELOADING DEPENDENCIES
+echo.
 
-echo λ ~ FREEMAN DOING THE SPECIFIC CLEANUP!
-rmdir /S /Q build/
-rmdir /S /Q .dart_tool/
-rmdir /S /Q .gradle/
-rmdir /S /Q .idea/
-rmdir /S /Q .packages
-rmdir /S /Q ios/Pods
-rmdir /S /Q ios/.symlinks
-rmdir /S /Q ios/Flutter/Flutter.framework
-rmdir /S /Q ios/Flutter/Flutter.podspec
-rmdir /S /Q ios/Flutter/App.framework
-rmdir /S /Q android/.gradle
-rmdir /S /Q android/.idea
-rmdir /S /Q android/.gradle/caches/
-rmdir /S /Q android/.gradle/daemon/
-rmdir /S /Q android/.gradle/native/
-rmdir /S /Q android/.gradle/7.0/
-rmdir /S /Q android/build/
-del /F /Q pubspec.lock
+echo y | flutter pub get
 
-echo λ ~ FREEMAN RELOADING DEPENDENCIES
-flutter pub get
-
-echo λ ~ FREEMAN IS OUT! HAVE A GREAT DAY!
+echo $ ~ FREEMAN IS OUT! HAVE A GREAT DAY!
