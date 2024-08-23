@@ -1,9 +1,13 @@
 @echo off
-echo FREEMAN WAS HERE! Cleaning Cache...
+echo λ ~ FREEMAN WAS HERE! LET'S GO...
+
+echo λ ~ FREEMAN DOING WHAT NEEDS TO BE DONE 
 
 flutter clean
-flutter pub clean cache
+flutter pub cache clean
 flutter pub cache repair
+
+echo λ ~ FREEMAN DOING THE SPECIFIC CLEANUP!
 rmdir /S /Q build/
 rmdir /S /Q .dart_tool/
 rmdir /S /Q .gradle/
@@ -23,8 +27,7 @@ rmdir /S /Q android/.gradle/7.0/
 rmdir /S /Q android/build/
 del /F /Q pubspec.lock
 
+echo λ ~ FREEMAN RELOADING DEPENDENCIES
 flutter pub get
 
-
-echo Cache cleaned! Have a good day!
-
+echo λ ~ FREEMAN IS OUT! HAVE A GREAT DAY!
