@@ -1,6 +1,6 @@
 @echo off
 
-echo $ ~ FREEMAN WAS HERE! LET'S GO...
+echo $ ~ OH! HELLO FREEMAN. LET'S GO...
 echo.
 echo $ ~ FREEMAN DOING WHAT NEEDS TO BE DONE 
 echo.
@@ -39,4 +39,4 @@ echo.
 
 echo y | flutter pub get
 
-echo $ ~ FREEMAN IS OUT! HAVE A GREAT DAY!
+echo $ ~ FREEMAN WAS HERE! HAVE A GREAT DAY!
