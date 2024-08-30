@@ -19,7 +19,7 @@ O **Freeman Script** é um script de limpeza automatizado projetado para ambient
 
 ## Uso
 
-1. Salve o script como um arquivo `.bat`, por exemplo, `freeman_cleanup.bat`.
+1. Salve o script como um arquivo `.bat`, por exemplo, `freeman.bat`.
 2. Execute o script no prompt de comando do Windows para iniciar o processo de limpeza.
 
 ```batch
@@ -34,4 +34,13 @@ freeman.bat
 
 ---
 
-Você pode ajustar o conteúdo conforme necessário para refletir detalhes específicos ou adicionar informações extras.
+## Colocar Freeman como Alias no Windows
+---
+
+1 - Primeiro passo devemos deixar o Arquivo freeman.bat em algum lugar que não irá ser mudado, por exemplo: C:\scripts\freeman.bat
+2 - Devemos copiar a pasta \bat do projeto para o disco atual. *Obs.: Caso coloque o freeman em outro diretório lembre-se de atualizar o arquivo macros.doskey*
+3 - Feito isso devemos rodar os camandos para Colocar o script de macros para a inicialização
+*  reg add "HKCU\Software\Microsoft\Command Processor" /v Autorun /d "doskey /macrofile=\"C:\bat\macros.doskey\"" /f
+*  reg query "HKCU\Software\Microsoft\Command Processor" /v Autorun
+4 - Have a good day
+   
