@@ -35,12 +35,14 @@ freeman.bat
 ---
 
 ## Colocar Freeman como Alias no Windows
----
 
-1 - Primeiro passo devemos deixar o Arquivo freeman.bat em algum lugar que não irá ser mudado, por exemplo: C:\scripts\freeman.bat
-2 - Devemos copiar a pasta \bat do projeto para o disco atual. *Obs.: Caso coloque o freeman em outro diretório lembre-se de atualizar o arquivo macros.doskey*
-3 - Feito isso devemos rodar os camandos para Colocar o script de macros para a inicialização
-*  reg add "HKCU\Software\Microsoft\Command Processor" /v Autorun /d "doskey /macrofile=\"C:\bat\macros.doskey\"" /f
-*  reg query "HKCU\Software\Microsoft\Command Processor" /v Autorun
-4 - Have a good day
+1. Primeiro passo devemos deixar o Arquivo freeman.bat em algum lugar que não irá ser mudado, por exemplo: `C:\scripts\freeman.bat`
+   
+3. Devemos copiar a pasta `\bat` do projeto para o disco atual. *Obs.: Caso coloque o freeman em outro diretório lembre-se de atualizar o arquivo `macros.doskey`*
+   
+4. Feito isso devemos rodar os camandos para Colocar o script de macros para a inicialização
+   *  `reg add "HKCU\Software\Microsoft\Command Processor" /v Autorun /d "doskey /macrofile=\"C:\bat\macros.doskey\"" /f`
+   *  `reg query "HKCU\Software\Microsoft\Command Processor" /v Autorun`
+   
+5. Have a good day
    
