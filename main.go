@@ -1,9 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strconv"
 )
 
 var dirsToRemove = []string{
@@ -30,21 +33,144 @@ var filesToRemove = []string{
 	"pubspec.lock",
 }
 
+type Config struct {
+	PrioritizeFVM bool `json:"prioritize_fvm"`
+}
+
+func configPath() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return ".freeman_config.json"
+	}
+	return filepath.Join(home, ".freeman", "config.json")
+}
+
+func loadConfig() Config {
+	data, err := os.ReadFile(configPath())
+	if err != nil {
+		return Config{}
+	}
+	var cfg Config
+	if err := json.Unmarshal(data, &cfg); err != nil {
+		return Config{}
+	}
+	return cfg
+}
+
+func saveConfig(cfg Config) error {
+	path := configPath()
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		return err
+	}
+	data, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, data, 0644)
+}
+
+func handleConfig(args []string) {
+	cfg := loadConfig()
+
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--prioritize-fvm":
+			if i+1 >= len(args) {
+				fmt.Fprintln(os.Stderr, "error: --prioritize-fvm requires a value (true/false)")
+				os.Exit(1)
+			}
+			i++
+			val, err := strconv.ParseBool(args[i])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "error: invalid value for --prioritize-fvm: %s\n", args[i])
+				os.Exit(1)
+			}
+			cfg.PrioritizeFVM = val
+		default:
+			fmt.Fprintf(os.Stderr, "unknown config option: %s\n", args[i])
+			os.Exit(1)
+		}
+	}
+
+	if err := saveConfig(cfg); err != nil {
+		fmt.Fprintf(os.Stderr, "error saving config: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("$ ~ Config saved: prioritize_fvm=%v\n", cfg.PrioritizeFVM)
+}
+
+func fvmAvailable() bool {
+	_, err := exec.LookPath("fvm")
+	return err == nil
+}
+
+func hasFVMProject() bool {
+	_, err := os.Stat(".fvm")
+	return err == nil
+}
+
+func shouldUseFVM(forceFVM bool) bool {
+	if forceFVM || loadConfig().PrioritizeFVM || hasFVMProject() {
+		if !fvmAvailable() {
+			fmt.Println("$ ~ FVM not found, falling back to global Flutter")
+			return false
+		}
+		return true
+	}
+	return false
+}
+
+func runFlutter(useFVM bool, args ...string) {
+	var cmd *exec.Cmd
+	if useFVM {
+		cmd = exec.Command("fvm", append([]string{"flutter"}, args...)...)
+	} else {
+		cmd = exec.Command("flutter", args...)
+	}
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "warning: flutter %v: %v\n", args, err)
+	}
+}
+
 func main() {
+	args := os.Args[1:]
+
+	if len(args) > 0 && args[0] == "config" {
+		handleConfig(args[1:])
+		return
+	}
+
+	forceFVM := false
+	for _, arg := range args {
+		if arg == "--fvm" || arg == "--use-fvm" {
+			forceFVM = true
+		}
+	}
+
+	useFVM := shouldUseFVM(forceFVM)
+
 	fmt.Println("$ ~ OH! HELLO FREEMAN. LET'S GO...")
+	if useFVM {
+		fmt.Println("$ ~ USING FVM FOR FLUTTER COMMANDS")
+	}
 	fmt.Println()
 	fmt.Println("$ ~ FREEMAN DOING WHAT NEEDS TO BE DONE")
 	fmt.Println()
 
-	runFlutter("clean")
+	runFlutter(useFVM, "clean")
 	fmt.Println("$ ~ 1/3")
 	fmt.Println()
 
-	runFlutter("pub", "cache", "repair")
+	runFlutter(useFVM, "pub", "cache", "repair")
 	fmt.Println("$ ~ 2/3")
 	fmt.Println()
 
-	runFlutter("pub", "cache", "clean")
+	runFlutter(useFVM, "pub", "cache", "clean")
 	fmt.Println("$ ~ 3/3")
 	fmt.Println()
 
@@ -66,19 +192,8 @@ func main() {
 	fmt.Println("$ ~ FREEMAN RELOADING DEPENDENCIES")
 	fmt.Println()
 
-	runFlutter("pub", "get")
+	runFlutter(useFVM, "pub", "get")
 
 	fmt.Println()
 	fmt.Println("$ ~ FREEMAN WAS HERE! HAVE A GREAT DAY!")
-}
-
-func runFlutter(args ...string) {
-	cmd := exec.Command("flutter", args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-
-	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "warning: flutter %v: %v\n", args, err)
-	}
 }
