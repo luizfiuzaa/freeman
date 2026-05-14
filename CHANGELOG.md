@@ -6,6 +6,16 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [2.3.1]
+
+### Adicionado
+
+- **Flag de ajuda (`--help` / `-h`)** — resolve [#8](https://github.com/luizfiuzaa/freeman/issues/8)
+  - Exibe todos os comandos, flags, modos de execução, opções de configuração e exemplos de uso
+  - Pode ser chamada a qualquer momento: `freeman --help` ou `freeman -h`
+
+---
+
 ## [2.3.0]
 
 ### Adicionado

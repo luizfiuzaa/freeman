@@ -32,6 +32,14 @@ Execute o binário na raiz do seu projeto Flutter:
 freeman.exe      # Windows
 ```
 
+Para ver todos os comandos e flags disponíveis:
+
+```bash
+freeman --help
+# ou
+freeman -h
+```
+
 ---
 
 ## Suporte ao FVM (Flutter Version Management)
@@ -137,6 +145,7 @@ freeman --verbose
 | `--verbose` | Exibe cada item removido |
 | `--clean-cache` | Remove o pub cache local da máquina |
 | `--fvm` / `--use-fvm` | Força o uso do FVM |
+| `--help` / `-h` | Exibe a mensagem de ajuda com todos os comandos |
 
 ---
 
