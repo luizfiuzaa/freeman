@@ -6,6 +6,27 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [2.3.0]
+
+### Adicionado
+
+- **Safe Mode (`--safe`)** — resolve [#7](https://github.com/luizfiuzaa/freeman/issues/7)
+  - Executa apenas `flutter clean` e `flutter pub get`, sem remover caches globais ou diretórios do projeto
+  - Ideal para limpezas rápidas ou ambientes CI/CD onde a perda de cache é custosa
+
+- **Flags de controle seletivo de limpeza**
+  - `--no-repair`: pula o `flutter pub cache repair`
+  - `--no-cache-clean`: pula o `flutter pub cache clean`
+  - `--keep-lockfile`: preserva o `pubspec.lock` durante a limpeza
+
+- **Dry Run (`--dry-run`)**: exibe tudo que seria removido e executado sem realizar nenhuma alteração
+
+- **Verbose Mode (`--verbose`)**: exibe cada diretório e arquivo removido durante a limpeza específica
+
+- **Contador de steps dinâmico**: o progresso `N/N` agora reflete o número real de comandos flutter que serão executados conforme as flags ativas
+
+---
+
 ## [2.2.0]
 
 ### Adicionado
