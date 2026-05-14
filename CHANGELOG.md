@@ -14,6 +14,16 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
   - Exibe todos os comandos, flags, modos de execução, opções de configuração e exemplos de uso
   - Pode ser chamada a qualquer momento: `freeman --help` ou `freeman -h`
 
+### Documentação
+
+- **README.md reformulado** — resolve [#5](https://github.com/luizfiuzaa/freeman/issues/5)
+  - Seção de pré-requisitos com versões mínimas de Go e Flutter
+  - Guia de instalação completo: compilação a partir do fonte, download de binário e configuração global no PATH (macOS, Linux e Windows)
+  - Seção de arquitetura: estrutura de arquivos, fluxo interno e tabela de funções principais
+  - Tabela de diretórios e arquivos removidos pelo Freeman
+  - Referência completa de todas as flags com exemplos combinados
+  - Seções dedicadas para Safe Mode, Dry Run, `--clean-cache` e FVM
+
 ---
 
 ## [2.3.0]

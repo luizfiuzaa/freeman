@@ -1,31 +1,75 @@
 # Freeman
 
-O **Freeman** é uma ferramenta de limpeza automatizada para projetos Flutter. Ele remove arquivos e diretórios desnecessários e corrige problemas de cache, preparando o ambiente para uma nova build.
+> Ferramenta de limpeza automatizada para projetos Flutter — cross-platform, sem dependências externas.
 
-## Como Funciona
+![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+![License](https://img.shields.io/github/license/luizfiuzaa/freeman)
 
-1. **Limpeza Geral**
-   - `flutter clean`: Remove arquivos temporários de builds anteriores.
-   - `flutter pub cache repair`: Repara o cache do pub.
-   - `flutter pub cache clean`: Limpa o cache do pub.
+---
 
-2. **Remoção de Diretórios e Arquivos**
-   - Remove diretórios e arquivos específicos do Flutter e Gradle que podem causar problemas em builds subsequentes.
+## O que é o Freeman?
 
-3. **Recuperação e Atualização de Dependências**
-   - Executa `flutter pub get` para garantir que todas as dependências estejam atualizadas.
+Ambientes Flutter acumulam caches corrompidos, arquivos de lock desatualizados e artefatos de build que causam erros difíceis de diagnosticar. O Freeman automatiza a limpeza completa desse ambiente em um único comando, economizando o tempo gasto em sequências manuais de `flutter clean`, remoção de pastas e reinstalação de dependências.
+
+---
+
+## Pré-requisitos
+
+| Requisito | Versão mínima | Link |
+|---|---|---|
+| Go | 1.21 | [go.dev/dl](https://go.dev/dl/) |
+| Flutter | qualquer | [flutter.dev](https://flutter.dev/docs/get-started/install) |
+| FVM *(opcional)* | qualquer | [fvm.app](https://fvm.app/) |
+
+---
 
 ## Instalação
 
-Certifique-se de ter o [Go](https://go.dev/dl/) instalado, depois compile o binário:
+### Compilando a partir do código-fonte
 
 ```bash
-go build -o freeman .
+# Clone o repositório
+git clone https://github.com/luizfiuzaa/freeman.git
+cd freeman
+
+# Compile o binário
+go build -o freeman .        # macOS / Linux
+go build -o freeman.exe .    # Windows
 ```
 
-## Uso
+### Download direto
 
-Execute o binário na raiz do seu projeto Flutter:
+Baixe o binário pré-compilado para o seu sistema na [página de releases](https://github.com/luizfiuzaa/freeman/releases).
+
+### Tornar global (opcional)
+
+Adicione o binário ao `PATH` para chamá-lo de qualquer diretório:
+
+**macOS / Linux**
+
+```bash
+# Opção 1 — mover para um diretório já no PATH
+mv freeman /usr/local/bin/freeman
+
+# Opção 2 — adicionar diretório personalizado ao PATH
+mv freeman ~/scripts/freeman
+echo 'export PATH="$HOME/scripts:$PATH"' >> ~/.zshrc   # ou ~/.bashrc
+source ~/.zshrc
+```
+
+**Windows**
+
+1. Mova `freeman.exe` para um diretório fixo, ex.: `C:\scripts\`.
+2. Abra **Configurações do Sistema → Variáveis de Ambiente**.
+3. Em **Variáveis do sistema**, edite `Path` e adicione `C:\scripts\`.
+4. Abra um novo terminal e chame `freeman` diretamente.
+
+---
+
+## Uso rápido
+
+Execute na raiz do seu projeto Flutter:
 
 ```bash
 ./freeman        # macOS / Linux
@@ -36,47 +80,156 @@ Para ver todos os comandos e flags disponíveis:
 
 ```bash
 freeman --help
-# ou
-freeman -h
 ```
+
+---
+
+## Como funciona
+
+O Freeman executa as seguintes etapas em sequência:
+
+```
+1. (opcional) Remove o pub cache local da máquina   --clean-cache
+2. flutter clean
+3. flutter pub cache repair
+4. flutter pub cache clean
+5. Remove diretórios e arquivos de build
+6. flutter pub get
+```
+
+### Diretórios e arquivos removidos na etapa 5
+
+| Tipo | Caminho |
+|---|---|
+| Diretório | `build/` |
+| Diretório | `.dart_tool/` |
+| Diretório | `.gradle/` |
+| Diretório | `.idea/` |
+| Diretório | `.packages/` |
+| Diretório | `ios/Pods/` |
+| Diretório | `ios/.symlinks/` |
+| Diretório | `ios/Flutter/Flutter.framework/` |
+| Diretório | `ios/Flutter/Flutter.podspec/` |
+| Diretório | `ios/Flutter/App.framework/` |
+| Diretório | `android/.gradle/` |
+| Diretório | `android/.idea/` |
+| Diretório | `android/build/` |
+| Arquivo | `pubspec.lock` |
+
+---
+
+## Arquitetura
+
+O projeto é um único binário Go (`main.go`) sem dependências externas — usa apenas a biblioteca padrão.
+
+```
+freeman/
+├── main.go          # Toda a lógica da aplicação
+├── go.mod           # Módulo Go
+└── ~/.freeman/
+    └── config.json  # Configuração global persistente (criado em tempo de execução)
+```
+
+### Fluxo interno
+
+```
+os.Args
+  │
+  ├── "--help" / "-h"   → printHelp()  → exit
+  ├── "config"          → handleConfig() → saveConfig() → exit
+  │
+  └── flags de execução
+        │
+        ├── shouldUseFVM()     detecta FVM (flag > config > .fvm/)
+        ├── cleanPubCache()    remove ~/.pub-cache ou %LOCALAPPDATA%\Pub\Cache
+        ├── runFlutter()       executa flutter ou fvm flutter
+        └── os.RemoveAll()     remove diretórios e arquivos de build
+```
+
+### Funções principais
+
+| Função | Responsabilidade |
+|---|---|
+| `main()` | Parse de flags e orquestração do fluxo |
+| `printHelp()` | Exibe a mensagem de ajuda |
+| `handleConfig()` | Lê e persiste configurações globais |
+| `loadConfig()` / `saveConfig()` | Serialização JSON da config em `~/.freeman/config.json` |
+| `shouldUseFVM()` | Decide se usa FVM com base em flag, config e presença de `.fvm/` |
+| `runFlutter()` | Executa comandos flutter ou fvm flutter |
+| `pubCachePath()` | Retorna o caminho do pub cache conforme o SO |
+| `cleanPubCache()` | Remove o pub cache local da máquina |
+| `logRemove()` | Imprime item removido (ou simulado em dry-run) |
+
+---
+
+## Flags de execução
+
+### Referência completa
+
+| Flag | Comportamento |
+|---|---|
+| `--safe` | Somente `flutter clean` + `flutter pub get` |
+| `--no-repair` | Pula `flutter pub cache repair` |
+| `--no-cache-clean` | Pula `flutter pub cache clean` |
+| `--keep-lockfile` | Preserva o `pubspec.lock` |
+| `--clean-cache` | Remove o pub cache local da máquina |
+| `--dry-run` | Simula a execução sem alterar nada |
+| `--verbose` | Exibe cada arquivo e diretório removido |
+| `--fvm` / `--use-fvm` | Força o uso do FVM nesta execução |
+| `--help` / `-h` | Exibe a mensagem de ajuda |
+
+As flags podem ser combinadas livremente:
+
+```bash
+freeman --safe --fvm
+freeman --no-repair --keep-lockfile --verbose
+freeman --dry-run --verbose
+freeman --clean-cache --fvm
+```
+
+---
+
+## Safe Mode (`--safe`)
+
+Executa apenas `flutter clean` + `flutter pub get`, sem tocar em caches globais ou remover diretórios. Ideal para limpezas rápidas ou pipelines de CI/CD onde reconstruir o cache é custoso.
+
+```bash
+freeman --safe
+```
+
+---
+
+## Dry Run (`--dry-run`)
+
+Mostra tudo que seria removido e executado, sem realizar nenhuma alteração.
+
+```bash
+freeman --dry-run
+freeman --dry-run --verbose   # com listagem de cada item individualmente
+```
+
+---
+
+## Limpeza do Pub Cache Local (`--clean-cache`)
+
+Remove o diretório do pub cache da máquina diretamente no sistema de arquivos, sem depender do Flutter CLI. Útil quando erros persistem mesmo após `flutter pub cache clean`.
+
+```bash
+freeman --clean-cache
+```
+
+| SO | Caminho removido |
+|---|---|
+| Windows | `%LOCALAPPDATA%\Pub\Cache` |
+| macOS / Linux | `~/.pub-cache` |
 
 ---
 
 ## Suporte ao FVM (Flutter Version Management)
 
-O Freeman detecta e utiliza o [FVM](https://fvm.app/) automaticamente quando disponível. Se o FVM não estiver instalado, o Flutter global é usado como fallback sem interrupção.
+O Freeman detecta e utiliza o [FVM](https://fvm.app/) automaticamente. Se o FVM não estiver instalado, o Flutter global é usado como fallback.
 
-### Detecção automática
-
-Se o seu projeto possuir o diretório `.fvm/`, o Freeman já usa o FVM automaticamente — nenhuma configuração necessária.
-
-### Via flag
-
-Force o uso do FVM em uma execução específica:
-
-```bash
-freeman --fvm
-# ou
-freeman --use-fvm
-```
-
-### Via configuração global
-
-Ative o FVM para todos os projetos de forma persistente:
-
-```bash
-freeman config --prioritize-fvm true
-```
-
-Para desativar:
-
-```bash
-freeman config --prioritize-fvm false
-```
-
-A configuração é salva em `~/.freeman/config.json`.
-
-### Prioridade de decisão
+### Ordem de prioridade
 
 | Condição | Resultado |
 |---|---|
@@ -86,141 +239,55 @@ A configuração é salva em `~/.freeman/config.json`.
 | FVM não instalado (qualquer caso acima) | Fallback para Flutter global |
 | Nenhuma das condições acima | Usa Flutter global |
 
----
-
-## Modos de Limpeza e Flags de Controle
-
-O Freeman oferece flags para adaptar a limpeza ao seu contexto, evitando operações desnecessárias ou demoradas.
-
-### Safe Mode (`--safe`)
-
-Executa apenas `flutter clean` + `flutter pub get`, sem tocar em caches globais ou remover diretórios do projeto. Ideal para limpezas rápidas ou pipelines de CI/CD.
+### Configuração global
 
 ```bash
+# Ativar FVM para todos os projetos
+freeman config --prioritize-fvm true
+
+# Desativar
+freeman config --prioritize-fvm false
+```
+
+A configuração é salva em `~/.freeman/config.json`.
+
+---
+
+## Exemplos de uso
+
+```bash
+# Limpeza completa padrão
+freeman
+
+# Limpeza rápida sem cache ops (boa para CI/CD)
 freeman --safe
-```
 
-### Controle seletivo
-
-Pule etapas específicas do fluxo padrão:
-
-```bash
-freeman --no-repair        # pula flutter pub cache repair
-freeman --no-cache-clean   # pula flutter pub cache clean
-freeman --keep-lockfile    # preserva o pubspec.lock
-```
-
-As flags podem ser combinadas:
-
-```bash
-freeman --no-repair --keep-lockfile
-```
-
-### Dry Run (`--dry-run`)
-
-Mostra tudo que seria removido e executado, sem realizar nenhuma alteração:
-
-```bash
+# Ver o que seria feito antes de executar
 freeman --dry-run
-freeman --dry-run --verbose   # com listagem individual de cada item
-```
 
-### Verbose Mode (`--verbose`)
-
-Exibe cada diretório e arquivo removido durante a execução:
-
-```bash
+# Ver cada arquivo sendo removido
 freeman --verbose
-```
 
-### Tabela de flags disponíveis
+# Pular etapas demoradas
+freeman --no-repair
+freeman --no-cache-clean
+freeman --no-repair --no-cache-clean
 
-| Flag | Comportamento |
-|---|---|
-| `--safe` | Somente `flutter clean` + `flutter pub get` |
-| `--no-repair` | Pula `flutter pub cache repair` |
-| `--no-cache-clean` | Pula `flutter pub cache clean` |
-| `--keep-lockfile` | Preserva o `pubspec.lock` |
-| `--dry-run` | Simula a execução sem alterar nada |
-| `--verbose` | Exibe cada item removido |
-| `--clean-cache` | Remove o pub cache local da máquina |
-| `--fvm` / `--use-fvm` | Força o uso do FVM |
-| `--help` / `-h` | Exibe a mensagem de ajuda com todos os comandos |
+# Preservar o pubspec.lock
+freeman --keep-lockfile
 
----
-
-## Limpeza do Pub Cache Local (`--clean-cache`)
-
-A flag `--clean-cache` remove o diretório do pub cache da máquina diretamente, sem depender do Flutter CLI. Útil quando erros persistem mesmo após `flutter pub cache clean`.
-
-```bash
+# Limpar também o pub cache local da máquina
 freeman --clean-cache
+
+# Usar FVM explicitamente
+freeman --fvm
+freeman --clean-cache --fvm --verbose
 ```
-
-Pode ser combinada com outras flags:
-
-```bash
-freeman --clean-cache --fvm
-```
-
-### Caminhos por sistema operacional
-
-| SO | Caminho |
-|---|---|
-| Windows | `%LOCALAPPDATA%\Pub\Cache` |
-| macOS / Linux | `~/.pub-cache` |
 
 ---
 
 ## Observações
 
-- Certifique-se de ter o Flutter instalado e configurado corretamente antes de executar.
-- O Freeman pode remover arquivos importantes, por isso é recomendável fazer backup do projeto antes de executá-lo.
-- A partir da v2.0.0 o Freeman é **cross-platform** — funciona em Windows, macOS e Linux.
-
----
-
-## Colocar Freeman como comando global (variável de ambiente)
-
-Após compilar, você pode adicionar o binário ao `PATH` do sistema para chamá-lo de qualquer diretório sem precisar informar o caminho completo.
-
-### macOS / Linux
-
-**Opção 1 — mover para um diretório já no PATH:**
-
-```bash
-mv freeman /usr/local/bin/freeman
-```
-
-**Opção 2 — adicionar um diretório personalizado ao PATH:**
-
-1. Mova o binário para o diretório desejado, ex.: `~/scripts/`:
-   ```bash
-   mv freeman ~/scripts/freeman
-   ```
-
-2. Adicione o diretório ao `PATH` no seu arquivo de perfil (`~/.bashrc`, `~/.zshrc`, etc.):
-   ```bash
-   export PATH="$HOME/scripts:$PATH"
-   ```
-
-3. Recarregue o perfil:
-   ```bash
-   source ~/.zshrc   # ou source ~/.bashrc
-   ```
-
-Agora basta digitar `freeman` na raiz de qualquer projeto Flutter.
-
-### Windows
-
-1. Mova o `freeman.exe` para um diretório fixo, ex.: `C:\scripts\`.
-
-2. Adicione esse diretório ao `PATH` do sistema:
-   - Abra **Configurações do Sistema → Variáveis de Ambiente**
-   - Em **Variáveis do sistema**, selecione `Path` e clique em **Editar**
-   - Adicione `C:\scripts\` e confirme
-
-3. Abra um novo terminal e chame diretamente:
-   ```bat
-   freeman
-   ```
+- Execute sempre na raiz do projeto Flutter.
+- O Freeman remove arquivos sem confirmação — use `--dry-run` para revisar antes de executar em projetos críticos.
+- A partir da v2.0.0 o Freeman é **cross-platform**: Windows, macOS e Linux.
