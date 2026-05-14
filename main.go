@@ -178,8 +178,63 @@ func logRemove(path string, dryRun bool) {
 	}
 }
 
+func printHelp() {
+	fmt.Println(`Freeman — Flutter environment cleaner
+
+USAGE
+  freeman [flags]
+  freeman config [config-flags]
+
+FLAGS
+  --safe             Safe mode: runs only flutter clean + flutter pub get.
+                     Skips cache operations and directory removal.
+
+  --no-repair        Skip flutter pub cache repair.
+  --no-cache-clean   Skip flutter pub cache clean.
+  --keep-lockfile    Preserve pubspec.lock during cleanup.
+  --clean-cache      Remove the local pub cache directory from the machine.
+                       Windows : %LOCALAPPDATA%\Pub\Cache
+                       macOS/Linux : ~/.pub-cache
+
+  --dry-run          Show everything that would be removed or executed
+                     without making any changes.
+  --verbose          Print each file and directory as it is removed.
+
+  --fvm / --use-fvm  Force FVM for all Flutter commands in this run.
+
+  --help / -h        Show this help message.
+
+CONFIG
+  freeman config --prioritize-fvm true   Always use FVM (saved globally).
+  freeman config --prioritize-fvm false  Disable global FVM preference.
+  Config file: ~/.freeman/config.json
+
+FVM AUTO-DETECTION
+  Freeman uses FVM automatically when any of these conditions are met:
+    1. Flag --fvm or --use-fvm is passed.
+    2. Global config prioritize_fvm is true.
+    3. Directory .fvm/ exists in the project root.
+  Falls back to global Flutter if FVM is not installed.
+
+EXAMPLES
+  freeman                              Full cleanup (default)
+  freeman --safe                       Quick clean, no cache ops
+  freeman --dry-run                    Preview what would happen
+  freeman --dry-run --verbose          Preview with per-item detail
+  freeman --no-repair --keep-lockfile  Skip repair, keep lockfile
+  freeman --clean-cache --fvm          Clear local cache + use FVM
+  freeman --verbose                    Show each removed item`)
+}
+
 func main() {
 	args := os.Args[1:]
+
+	for _, arg := range args {
+		if arg == "--help" || arg == "-h" {
+			printHelp()
+			return
+		}
+	}
 
 	if len(args) > 0 && args[0] == "config" {
 		handleConfig(args[1:])
