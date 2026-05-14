@@ -32,6 +32,54 @@ Execute o binário na raiz do seu projeto Flutter:
 freeman.exe      # Windows
 ```
 
+---
+
+## Suporte ao FVM (Flutter Version Management)
+
+O Freeman detecta e utiliza o [FVM](https://fvm.app/) automaticamente quando disponível. Se o FVM não estiver instalado, o Flutter global é usado como fallback sem interrupção.
+
+### Detecção automática
+
+Se o seu projeto possuir o diretório `.fvm/`, o Freeman já usa o FVM automaticamente — nenhuma configuração necessária.
+
+### Via flag
+
+Force o uso do FVM em uma execução específica:
+
+```bash
+freeman --fvm
+# ou
+freeman --use-fvm
+```
+
+### Via configuração global
+
+Ative o FVM para todos os projetos de forma persistente:
+
+```bash
+freeman config --prioritize-fvm true
+```
+
+Para desativar:
+
+```bash
+freeman config --prioritize-fvm false
+```
+
+A configuração é salva em `~/.freeman/config.json`.
+
+### Prioridade de decisão
+
+| Condição | Resultado |
+|---|---|
+| Flag `--fvm` ou `--use-fvm` passada | Usa FVM |
+| Config global `prioritize_fvm: true` | Usa FVM |
+| Diretório `.fvm/` presente no projeto | Usa FVM |
+| FVM não instalado (qualquer caso acima) | Fallback para Flutter global |
+| Nenhuma das condições acima | Usa Flutter global |
+
+---
+
 ## Observações
 
 - Certifique-se de ter o Flutter instalado e configurado corretamente antes de executar.
