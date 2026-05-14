@@ -1,0 +1,52 @@
+name: Refactor
+description: Sugira uma refatoração de código no Freeman
+title: "[Refactor]: "
+labels: ["refactor"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Identificou código que pode ser melhor estruturado? Descreva abaixo.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição
+      description: Qual parte do código precisa ser refatorada e por quê?
+    validations:
+      required: true
+
+  - type: input
+    id: file
+    attributes:
+      label: Arquivo / Pacote
+      description: Qual arquivo ou pacote é afetado?
+      placeholder: "ex: main.go"
+    validations:
+      required: false
+
+  - type: textarea
+    id: justification
+    attributes:
+      label: Justificativa
+      description: Qual o problema atual? Legibilidade, performance, acoplamento?
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestions
+    attributes:
+      label: Sugestões de Abordagem
+      description: Como você faria essa refatoração?
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Contexto Adicional
+    validations:
+      required: false

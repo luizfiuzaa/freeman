@@ -1,0 +1,93 @@
+name: Bug Report
+description: Reporte um bug encontrado no Freeman
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por reportar! Preencha os campos abaixo para nos ajudar a reproduzir e corrigir o problema.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição
+      description: O que está acontecendo? Descreva o comportamento inesperado.
+      placeholder: Ao executar o freeman em um projeto Flutter...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para Reproduzir
+      description: Liste os passos para reproduzir o bug.
+      placeholder: |
+        1. Compile o binário com `go build -o freeman .`
+        2. Execute `./freeman` na raiz do projeto Flutter
+        3. Observe o erro...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento Esperado
+      description: O que deveria acontecer?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamento Atual
+      description: O que acontece de fato?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: Frequência
+      description: Com que frequência o bug ocorre?
+      options:
+        - Sempre
+        - Às vezes
+        - Aleatoriamente
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Sistema Operacional
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: true
+
+  - type: input
+    id: go-version
+    attributes:
+      label: Versão do Go
+      placeholder: "ex: 1.22.0"
+    validations:
+      required: false
+
+  - type: input
+    id: flutter-version
+    attributes:
+      label: Versão do Flutter
+      placeholder: "ex: 3.19.0"
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Informações Adicionais
+      description: Logs, screenshots ou vídeos que ajudem a entender o problema.
+    validations:
+      required: false

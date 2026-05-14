@@ -1,0 +1,45 @@
+name: Documentation
+description: Criação ou melhoria de documentação no Freeman
+title: "[Docs]: "
+labels: ["docs"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Faltou documentar algo ou a documentação existente está incompleta? Nos avise!
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Tipo
+      description: É uma documentação nova ou melhoria de uma existente?
+      options:
+        - Nova documentação
+        - Melhoria de documentação existente
+    validations:
+      required: true
+
+  - type: input
+    id: section
+    attributes:
+      label: Seção / Arquivo
+      description: Qual parte do projeto precisa de documentação?
+      placeholder: "ex: README.md, seção de instalação"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição
+      description: O que precisa ser documentado ou o que está errado/incompleto?
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Detalhes
+      description: Informações adicionais, sugestões de conteúdo ou links de referência.
+    validations:
+      required: false

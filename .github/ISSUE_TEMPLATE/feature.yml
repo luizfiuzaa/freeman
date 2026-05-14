@@ -1,0 +1,45 @@
+name: Feature Request
+description: Sugira uma nova funcionalidade para o Freeman
+title: "[Feature]: "
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tem uma ideia para o Freeman? Descreva abaixo!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição da Feature
+      description: Explique a funcionalidade que você gostaria de ver no projeto.
+      placeholder: Gostaria que o Freeman também...
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivação
+      description: Por que essa feature seria útil? Qual problema ela resolve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: functionalities
+    attributes:
+      label: Funcionalidades Envolvidas
+      description: Liste as sub-funcionalidades ou comportamentos esperados.
+      placeholder: |
+        - Funcionalidade 1: ...
+        - Funcionalidade 2: ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Contexto Adicional
+      description: Referências, exemplos ou qualquer informação extra que ajude.
+    validations:
+      required: false

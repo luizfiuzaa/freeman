@@ -1,0 +1,43 @@
+name: Improvement
+description: Sugira uma melhoria em algo que já existe no Freeman
+title: "[Improvement]: "
+labels: ["improvement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Algo pode ser melhorado? Descreva o que e como.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição
+      description: O que você quer melhorar? Descreva o comportamento atual.
+    validations:
+      required: true
+
+  - type: textarea
+    id: justification
+    attributes:
+      label: Justificativa
+      description: Por que essa melhoria é necessária? Qual o impacto esperado?
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestions
+    attributes:
+      label: Sugestões de Implementação
+      description: Se tiver ideias de como implementar, descreva aqui.
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Contexto Adicional
+    validations:
+      required: false
