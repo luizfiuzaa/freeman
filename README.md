@@ -80,6 +80,29 @@ A configuração é salva em `~/.freeman/config.json`.
 
 ---
 
+## Limpeza do Pub Cache Local (`--clean-cache`)
+
+A flag `--clean-cache` remove o diretório do pub cache da máquina diretamente, sem depender do Flutter CLI. Útil quando erros persistem mesmo após `flutter pub cache clean`.
+
+```bash
+freeman --clean-cache
+```
+
+Pode ser combinada com outras flags:
+
+```bash
+freeman --clean-cache --fvm
+```
+
+### Caminhos por sistema operacional
+
+| SO | Caminho |
+|---|---|
+| Windows | `%LOCALAPPDATA%\Pub\Cache` |
+| macOS / Linux | `~/.pub-cache` |
+
+---
+
 ## Observações
 
 - Certifique-se de ter o Flutter instalado e configurado corretamente antes de executar.
