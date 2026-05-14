@@ -40,18 +40,47 @@ freeman.exe      # Windows
 
 ---
 
-## Colocar Freeman como alias
+## Colocar Freeman como comando global (variável de ambiente)
+
+Após compilar, você pode adicionar o binário ao `PATH` do sistema para chamá-lo de qualquer diretório sem precisar informar o caminho completo.
 
 ### macOS / Linux
 
-Mova o binário para um diretório no seu `PATH`:
+**Opção 1 — mover para um diretório já no PATH:**
 
 ```bash
 mv freeman /usr/local/bin/freeman
 ```
 
-Depois é só chamar `freeman` de qualquer lugar.
+**Opção 2 — adicionar um diretório personalizado ao PATH:**
+
+1. Mova o binário para o diretório desejado, ex.: `~/scripts/`:
+   ```bash
+   mv freeman ~/scripts/freeman
+   ```
+
+2. Adicione o diretório ao `PATH` no seu arquivo de perfil (`~/.bashrc`, `~/.zshrc`, etc.):
+   ```bash
+   export PATH="$HOME/scripts:$PATH"
+   ```
+
+3. Recarregue o perfil:
+   ```bash
+   source ~/.zshrc   # ou source ~/.bashrc
+   ```
+
+Agora basta digitar `freeman` na raiz de qualquer projeto Flutter.
 
 ### Windows
 
-Mova o `freeman.exe` para um diretório já no `PATH` (ex.: `C:\scripts\`) e adicione esse diretório ao `PATH` do sistema, ou crie um alias no seu terminal preferido.
+1. Mova o `freeman.exe` para um diretório fixo, ex.: `C:\scripts\`.
+
+2. Adicione esse diretório ao `PATH` do sistema:
+   - Abra **Configurações do Sistema → Variáveis de Ambiente**
+   - Em **Variáveis do sistema**, selecione `Path` e clique em **Editar**
+   - Adicione `C:\scripts\` e confirme
+
+3. Abra um novo terminal e chame diretamente:
+   ```bat
+   freeman
+   ```
