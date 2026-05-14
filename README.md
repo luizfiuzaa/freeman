@@ -1,8 +1,6 @@
-
-
 # Freeman
 
-O **Freeman Script** é um script de limpeza automatizado projetado para ambientes Flutter. Ele remove arquivos e diretórios desnecessários e corrige problemas de cache, preparando o ambiente para uma nova construção.
+O **Freeman** é uma ferramenta de limpeza automatizada para projetos Flutter. Ele remove arquivos e diretórios desnecessários e corrige problemas de cache, preparando o ambiente para uma nova build.
 
 ## Como Funciona
 
@@ -12,37 +10,48 @@ O **Freeman Script** é um script de limpeza automatizado projetado para ambient
    - `flutter pub cache clean`: Limpa o cache do pub.
 
 2. **Remoção de Diretórios e Arquivos**
-   - Remove diretórios e arquivos específicos do Flutter e gradle que podem causar problemas em builds subsequentes.
+   - Remove diretórios e arquivos específicos do Flutter e Gradle que podem causar problemas em builds subsequentes.
 
 3. **Recuperação e Atualização de Dependências**
    - Executa `flutter pub get` para garantir que todas as dependências estejam atualizadas.
 
+## Instalação
+
+Certifique-se de ter o [Go](https://go.dev/dl/) instalado, depois compile o binário:
+
+```bash
+go build -o freeman .
+```
+
 ## Uso
 
-1. Salve o script como um arquivo `.bat`, por exemplo, `freeman.bat`.
-2. Execute o script no prompt de comando do Windows para iniciar o processo de limpeza.
+Execute o binário na raiz do seu projeto Flutter:
 
-```batch
-freeman.bat
+```bash
+./freeman        # macOS / Linux
+freeman.exe      # Windows
 ```
 
 ## Observações
 
-- Certifique-se de ter o Flutter instalado e configurado corretamente antes de executar o script.
-- O script pode remover arquivos importantes, por isso é recomendável fazer backup do projeto antes de executá-lo.
-- O script é projetado para ser executado em um ambiente Windows.
+- Certifique-se de ter o Flutter instalado e configurado corretamente antes de executar.
+- O Freeman pode remover arquivos importantes, por isso é recomendável fazer backup do projeto antes de executá-lo.
+- A partir da v2.0.0 o Freeman é **cross-platform** — funciona em Windows, macOS e Linux.
 
 ---
 
-## Colocar Freeman como Alias no Windows
+## Colocar Freeman como alias
 
-1. Primeiro passo devemos deixar o Arquivo freeman.bat em algum lugar que não irá ser mudado, por exemplo: `C:\scripts\freeman.bat`
-   
-3. Devemos copiar a pasta `\bat` do projeto para o disco atual. *Obs.: Caso coloque o freeman em outro diretório lembre-se de atualizar o arquivo `macros.doskey`*
-   
-4. Feito isso devemos rodar os camandos para Colocar o script de macros para a inicialização
-   *  `reg add "HKCU\Software\Microsoft\Command Processor" /v Autorun /d "doskey /macrofile=\"C:\bat\macros.doskey\"" /f`
-   *  `reg query "HKCU\Software\Microsoft\Command Processor" /v Autorun`
-   
-5. Have a good day
-   
+### macOS / Linux
+
+Mova o binário para um diretório no seu `PATH`:
+
+```bash
+mv freeman /usr/local/bin/freeman
+```
+
+Depois é só chamar `freeman` de qualquer lugar.
+
+### Windows
+
+Mova o `freeman.exe` para um diretório já no `PATH` (ex.: `C:\scripts\`) e adicione esse diretório ao `PATH` do sistema, ou crie um alias no seu terminal preferido.
