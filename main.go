@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 )
 
@@ -100,6 +101,38 @@ func handleConfig(args []string) {
 	fmt.Printf("$ ~ Config saved: prioritize_fvm=%v\n", cfg.PrioritizeFVM)
 }
 
+func pubCachePath() string {
+	switch runtime.GOOS {
+	case "windows":
+		localAppData := os.Getenv("LOCALAPPDATA")
+		if localAppData == "" {
+			home, _ := os.UserHomeDir()
+			localAppData = filepath.Join(home, "AppData", "Local")
+		}
+		return filepath.Join(localAppData, "Pub", "Cache")
+	default:
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return ""
+		}
+		return filepath.Join(home, ".pub-cache")
+	}
+}
+
+func cleanPubCache() {
+	cachePath := pubCachePath()
+	if cachePath == "" {
+		fmt.Fprintln(os.Stderr, "warning: could not determine pub cache path")
+		return
+	}
+	fmt.Printf("$ ~ CLEANING PUB CACHE: %s\n", cachePath)
+	if err := os.RemoveAll(cachePath); err != nil {
+		fmt.Fprintf(os.Stderr, "warning: could not remove pub cache: %v\n", err)
+		return
+	}
+	fmt.Println("$ ~ PUB CACHE CLEARED!")
+}
+
 func fvmAvailable() bool {
 	_, err := exec.LookPath("fvm")
 	return err == nil
@@ -146,9 +179,13 @@ func main() {
 	}
 
 	forceFVM := false
+	cleanCache := false
 	for _, arg := range args {
-		if arg == "--fvm" || arg == "--use-fvm" {
+		switch arg {
+		case "--fvm", "--use-fvm":
 			forceFVM = true
+		case "--clean-cache":
+			cleanCache = true
 		}
 	}
 
@@ -161,6 +198,11 @@ func main() {
 	fmt.Println()
 	fmt.Println("$ ~ FREEMAN DOING WHAT NEEDS TO BE DONE")
 	fmt.Println()
+
+	if cleanCache {
+		cleanPubCache()
+		fmt.Println()
+	}
 
 	runFlutter(useFVM, "clean")
 	fmt.Println("$ ~ 1/3")

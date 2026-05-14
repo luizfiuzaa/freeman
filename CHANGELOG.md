@@ -6,6 +6,19 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [2.2.0]
+
+### Adicionado
+
+- **Flag `--clean-cache`** para limpeza do pub cache local da máquina — resolve [#6](https://github.com/luizfiuzaa/freeman/issues/6)
+  - Remove o diretório de cache do pub diretamente no sistema operacional, sem depender do Flutter CLI
+  - Caminhos por SO:
+    - **Windows:** `%LOCALAPPDATA%\Pub\Cache`
+    - **macOS / Linux:** `~/.pub-cache`
+  - Pode ser combinada com as demais flags: `freeman --clean-cache --fvm`
+
+---
+
 ## [2.1.0]
 
 ### Adicionado
