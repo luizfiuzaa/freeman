@@ -170,6 +170,14 @@ func runFlutter(useFVM bool, args ...string) {
 	}
 }
 
+func logRemove(path string, dryRun bool) {
+	if dryRun {
+		fmt.Printf("$ ~ [DRY RUN] would remove: %s\n", path)
+	} else {
+		fmt.Printf("$ ~ removing: %s\n", path)
+	}
+}
+
 func main() {
 	args := os.Args[1:]
 
@@ -180,53 +188,135 @@ func main() {
 
 	forceFVM := false
 	cleanCache := false
+	safeMode := false
+	noCacheClean := false
+	noRepair := false
+	keepLockfile := false
+	dryRun := false
+	verbose := false
+
 	for _, arg := range args {
 		switch arg {
 		case "--fvm", "--use-fvm":
 			forceFVM = true
 		case "--clean-cache":
 			cleanCache = true
+		case "--safe":
+			safeMode = true
+		case "--no-cache-clean":
+			noCacheClean = true
+		case "--no-repair":
+			noRepair = true
+		case "--keep-lockfile":
+			keepLockfile = true
+		case "--dry-run":
+			dryRun = true
+		case "--verbose":
+			verbose = true
 		}
 	}
 
 	useFVM := shouldUseFVM(forceFVM)
 
+	// Calculate total steps (flutter clean + optional cache commands)
+	totalSteps := 1
+	if !safeMode && !noRepair {
+		totalSteps++
+	}
+	if !safeMode && !noCacheClean {
+		totalSteps++
+	}
+
+	step := 0
+	nextStep := func() {
+		step++
+		fmt.Printf("$ ~ %d/%d\n", step, totalSteps)
+		fmt.Println()
+	}
+
 	fmt.Println("$ ~ OH! HELLO FREEMAN. LET'S GO...")
 	if useFVM {
 		fmt.Println("$ ~ USING FVM FOR FLUTTER COMMANDS")
+	}
+	if safeMode {
+		fmt.Println("$ ~ SAFE MODE — skipping cache and directory cleanup")
+	}
+	if dryRun {
+		fmt.Println("$ ~ DRY RUN — no changes will be made")
 	}
 	fmt.Println()
 	fmt.Println("$ ~ FREEMAN DOING WHAT NEEDS TO BE DONE")
 	fmt.Println()
 
-	if cleanCache {
-		cleanPubCache()
-		fmt.Println()
-	}
-
-	runFlutter(useFVM, "clean")
-	fmt.Println("$ ~ 1/3")
-	fmt.Println()
-
-	runFlutter(useFVM, "pub", "cache", "repair")
-	fmt.Println("$ ~ 2/3")
-	fmt.Println()
-
-	runFlutter(useFVM, "pub", "cache", "clean")
-	fmt.Println("$ ~ 3/3")
-	fmt.Println()
-
-	fmt.Println("$ ~ FREEMAN DOING THE SPECIFIC CLEANUP!")
-
-	for _, dir := range dirsToRemove {
-		if err := os.RemoveAll(dir); err != nil {
-			fmt.Fprintf(os.Stderr, "warning: could not remove %s: %v\n", dir, err)
+	// Optional: remove local pub cache
+	if cleanCache && !safeMode {
+		if dryRun {
+			fmt.Printf("$ ~ [DRY RUN] would remove pub cache: %s\n", pubCachePath())
+			fmt.Println()
+		} else {
+			cleanPubCache()
+			fmt.Println()
 		}
 	}
 
-	for _, file := range filesToRemove {
-		if err := os.Remove(file); err != nil && !os.IsNotExist(err) {
-			fmt.Fprintf(os.Stderr, "warning: could not remove %s: %v\n", file, err)
+	// flutter clean
+	if dryRun {
+		fmt.Println("$ ~ [DRY RUN] flutter clean")
+	} else {
+		runFlutter(useFVM, "clean")
+	}
+	nextStep()
+
+	// flutter pub cache repair
+	if !safeMode && !noRepair {
+		if dryRun {
+			fmt.Println("$ ~ [DRY RUN] flutter pub cache repair")
+		} else {
+			runFlutter(useFVM, "pub", "cache", "repair")
+		}
+		nextStep()
+	}
+
+	// flutter pub cache clean
+	if !safeMode && !noCacheClean {
+		if dryRun {
+			fmt.Println("$ ~ [DRY RUN] flutter pub cache clean")
+		} else {
+			runFlutter(useFVM, "pub", "cache", "clean")
+		}
+		nextStep()
+	}
+
+	// Directory and file cleanup
+	if !safeMode {
+		fmt.Println("$ ~ FREEMAN DOING THE SPECIFIC CLEANUP!")
+
+		for _, dir := range dirsToRemove {
+			if dryRun || verbose {
+				logRemove(dir, dryRun)
+			}
+			if !dryRun {
+				if err := os.RemoveAll(dir); err != nil {
+					fmt.Fprintf(os.Stderr, "warning: could not remove %s: %v\n", dir, err)
+				}
+			}
+		}
+
+		if keepLockfile {
+			if verbose {
+				fmt.Println("$ ~ keeping pubspec.lock (--keep-lockfile)")
+			}
+		} else {
+			for _, file := range filesToRemove {
+				if dryRun || verbose {
+					logRemove(file, dryRun)
+				}
+				if !dryRun {
+					if err := os.Remove(file); err != nil && !os.IsNotExist(err) {
+						fmt.Fprintf(os.Stderr, "warning: could not remove %s: %v\n", file, err)
+					}
+				}
+			}
 		}
 	}
 
@@ -234,7 +324,11 @@ func main() {
 	fmt.Println("$ ~ FREEMAN RELOADING DEPENDENCIES")
 	fmt.Println()
 
-	runFlutter(useFVM, "pub", "get")
+	if dryRun {
+		fmt.Println("$ ~ [DRY RUN] flutter pub get")
+	} else {
+		runFlutter(useFVM, "pub", "get")
+	}
 
 	fmt.Println()
 	fmt.Println("$ ~ FREEMAN WAS HERE! HAVE A GREAT DAY!")

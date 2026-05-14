@@ -80,6 +80,66 @@ A configuração é salva em `~/.freeman/config.json`.
 
 ---
 
+## Modos de Limpeza e Flags de Controle
+
+O Freeman oferece flags para adaptar a limpeza ao seu contexto, evitando operações desnecessárias ou demoradas.
+
+### Safe Mode (`--safe`)
+
+Executa apenas `flutter clean` + `flutter pub get`, sem tocar em caches globais ou remover diretórios do projeto. Ideal para limpezas rápidas ou pipelines de CI/CD.
+
+```bash
+freeman --safe
+```
+
+### Controle seletivo
+
+Pule etapas específicas do fluxo padrão:
+
+```bash
+freeman --no-repair        # pula flutter pub cache repair
+freeman --no-cache-clean   # pula flutter pub cache clean
+freeman --keep-lockfile    # preserva o pubspec.lock
+```
+
+As flags podem ser combinadas:
+
+```bash
+freeman --no-repair --keep-lockfile
+```
+
+### Dry Run (`--dry-run`)
+
+Mostra tudo que seria removido e executado, sem realizar nenhuma alteração:
+
+```bash
+freeman --dry-run
+freeman --dry-run --verbose   # com listagem individual de cada item
+```
+
+### Verbose Mode (`--verbose`)
+
+Exibe cada diretório e arquivo removido durante a execução:
+
+```bash
+freeman --verbose
+```
+
+### Tabela de flags disponíveis
+
+| Flag | Comportamento |
+|---|---|
+| `--safe` | Somente `flutter clean` + `flutter pub get` |
+| `--no-repair` | Pula `flutter pub cache repair` |
+| `--no-cache-clean` | Pula `flutter pub cache clean` |
+| `--keep-lockfile` | Preserva o `pubspec.lock` |
+| `--dry-run` | Simula a execução sem alterar nada |
+| `--verbose` | Exibe cada item removido |
+| `--clean-cache` | Remove o pub cache local da máquina |
+| `--fvm` / `--use-fvm` | Força o uso do FVM |
+
+---
+
 ## Limpeza do Pub Cache Local (`--clean-cache`)
 
 A flag `--clean-cache` remove o diretório do pub cache da máquina diretamente, sem depender do Flutter CLI. Útil quando erros persistem mesmo após `flutter pub cache clean`.
